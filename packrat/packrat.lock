@@ -1,0 +1,36 @@
+PackratFormat: 1.4
+PackratVersion: 0.5.0
+RVersion: 3.4.4
+Repos: CRAN=https://cloud.r-project.org
+
+Package: Rcpp
+Source: CRAN
+Version: 1.0.4.6
+Hash: 8b95553bc32a59321b8981aa02bfbf72
+
+Package: classInt
+Source: CRAN
+Version: 0.4-3
+Hash: 40f1a7fc0254fffd9bf6e5ee046de859
+Requires: e1071
+
+Package: e1071
+Source: CRAN
+Version: 1.7-3
+Hash: f851e9de06edec144aa7d996bbf32538
+
+Package: generics
+Source: CRAN
+Version: 0.0.2
+Hash: 4aaf002dd434e8c854611c5d11a1d58e
+
+Package: lubridate
+Source: CRAN
+Version: 1.7.8
+Hash: ffe401bdcb9ccaea3d41a08f482a3aad
+Requires: Rcpp, generics
+
+Package: packrat
+Source: CRAN
+Version: 0.5.0
+Hash: 498643e765d1442ba7b1160a1df3abf9

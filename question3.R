@@ -1,14 +1,17 @@
 hist(sch.data$age)
 
-# frequency
-n = 3
-bin_freq = round(1138/n)
-print(bin_freq)
 
-ages = sort(sch.data$age)
+library(classInt)
+ages = sch.data$age
+
+# frequency
+f <- classIntervals(ages, 3, style = 'quantile')
+
+# width
+w <- classIntervals(ages, 3, style = 'equal')
 
 copy.data = sch.data
-
-rbin_equal_freq(data = copy.data, response = NULL, predictor = copy.data$age,
-                bins = n)
-# width
+copy.data$age = f
+View(data.frame(old_age=sch.data$age, new_age=copy.data$age))
+     
+     
