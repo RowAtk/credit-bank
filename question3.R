@@ -1,7 +1,7 @@
 hist(sch.data$age)
 
-
 library(classInt)
+
 ages = sch.data$age
 
 # frequency
