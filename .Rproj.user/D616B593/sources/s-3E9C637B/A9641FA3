@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1587956450823.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "833787118",
+    "id" : "A9641FA3",
+    "lastKnownWriteTime" : 1587959374,
+    "last_content_update" : 1587959374205,
+    "path" : "~/projects/code-crusaders/PythonR/assignment/credit-bank/question3.R",
+    "project_path" : "question3.R",
+    "properties" : {
+        "cursorPosition" : "9,20",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
