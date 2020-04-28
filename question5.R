@@ -8,8 +8,6 @@ library(lubridate)
 
 today = Sys.Date()
 
-sch.data$day[sch.data$day > 29 & sch.data$month == 2] = 28
-
 sch.data$deposit_date <- mdy(paste(sch.data$month, sch.data$day, "2019", sep = "-")) 
 
 # temp <- today() - sch.data$deposit_date[1]

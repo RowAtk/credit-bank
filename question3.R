@@ -1,4 +1,5 @@
 hist(sch.data$age)
+boxplot(sch.data$age)
 
 library(classInt)
 
@@ -13,5 +14,3 @@ w <- classIntervals(ages, 3, style = 'equal')
 copy.data = sch.data
 copy.data$age = f
 View(data.frame(old_age=sch.data$age, new_age=copy.data$age))
-     
-     
