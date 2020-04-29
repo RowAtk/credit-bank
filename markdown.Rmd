@@ -1,0 +1,54 @@
+---
+title: 'Scrum Cycle 05: Working in Python or R'
+author: "Code Crusaders"
+date: "4/28/2020"
+output:
+  powerpoint_presentation: default
+  ioslides_presentation: default
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  tidy = TRUE,
+  tidy.opts=list(blank=FALSE, width.cutoff=60,size = 'tiny'))
+library(knitr)
+library(papeR)
+#library(kableExtra)
+```
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+```{r loading, echo=FALSE}
+bank.data <- read.csv(file = "cohort2020-set-a.csv", stringsAsFactors = TRUE, header = TRUE, sep = ',', na.strings = c("", "NA"))
+```
+
+## Slide with R Output
+
+```{r data-summary, comment=""}
+kable(summary(bank.data)[,0:6])
+```
+
+## Summary Cont'd
+
+```{r, comment=""}
+kable(summary(bank.data)[,0:-6])
+```
+
+## Box Plot of Age feature
+
+```{r pressure}
+boxplot(bank.data$age)
+```
+

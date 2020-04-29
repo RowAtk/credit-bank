@@ -22,13 +22,17 @@ sch.data$contact = NULL # get rid of contact was useless
 sch.data$RefNum = NULL
 
 # Job
-levels(sch.data$job) <- c(levels(sch.data$job), "other")
-sch.data$job[is.na(sch.data$job)] <- "other"
+#levels(sch.data$job) <- c(levels(sch.data$job), "other")
+#sch.data$job[is.na(sch.data$job)] <- "other"
+#nrow(sch.data[sch.data$job == "other",])
+sch.data = View(sch.data[-is.na(sch.data$job)])
 
 # Education - primary: 1, secondary: 2, tertiary: 3
 levels(sch.data$education)
 sch.data$education <- as.integer(as.factor(sch.data$education))
 sch.data$education[is.na(sch.data$education)] <- 0
+nrow(sch.data[sch.data$education == 0,])
+hist(sch.data$education)
 
 # Housing
 # yes - housing_y, no - houing_n

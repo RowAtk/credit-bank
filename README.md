@@ -1,11 +1,12 @@
 # credit-bank
 
 # packages
-## dplyr
-## magrittr
-## classInt
-## lubridate
-## mtt
+Packages to install
+  - dplyr
+  - magrittr
+  - lubridate
+  - mtt
+  - knitr
 
 ## Run this first
 1. credit-bank.R
