@@ -22,9 +22,9 @@ hist(bank.data$age)
 
 # Job
 #barplot(summary(bank.data$job), las=2) # plot graph to identify outliers or noise
-#levels(bank.data$job) <- c(levels(bank.data$job), "other") # add 'other' as possible value
-#bank.data$job[is.na(bank.data$job)] <- "other"
-bank.data = bank.data[!is.na(bank.data$job),]
+  #levels(bank.data$job) <- c(levels(bank.data$job), "other") # add 'other' as possible value
+  #bank.data$job[is.na(bank.data$job)] <- "other"
+  bank.data = bank.data[!is.na(bank.data$job),]
 summary(bank.data[!is.na(bank.data$job),])
 
 # marital
@@ -101,4 +101,8 @@ boxplot(bank.data$balance)
 # END OF MISSING VALUES
 nrow(bank.data[!complete.cases(bank.data),])
 
-kable(summarize(bank.data))
+library(dplyr)
+library(kintr)
+library(kableExtra)
+kable(head(bank.data)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))

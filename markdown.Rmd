@@ -3,52 +3,200 @@ title: 'Scrum Cycle 05: Working in Python or R'
 author: "Code Crusaders"
 date: "4/28/2020"
 output:
-  powerpoint_presentation: default
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
   ioslides_presentation: default
-  beamer_presentation: default
 ---
 
-```{r setup, include=FALSE}
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE }
 knitr::opts_chunk$set(
+  #include = FALSE,
   echo = FALSE,
-  tidy = TRUE,
-  tidy.opts=list(blank=FALSE, width.cutoff=60,size = 'tiny'))
+  eval = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.height = 3,
+  fig.width = 4,
+  tidy = FALSE,
+  tidy.opts=list(blank=FALSE,size = 'tiny'))
 library(knitr)
+library(dplyr)
 library(papeR)
-#library(kableExtra)
-```
-
-## R Markdown
-
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-
-## Slide with Bullets
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-```{r loading, echo=FALSE}
+library(kableExtra)
+library(magick)
 bank.data <- read.csv(file = "cohort2020-set-a.csv", stringsAsFactors = TRUE, header = TRUE, sep = ',', na.strings = c("", "NA"))
 ```
 
-## Slide with R Output
-
-```{r data-summary, comment=""}
-kable(summary(bank.data)[,0:6])
+```{r core-functions}
+view = function(data, scroll=FALSE) {
+  if(scroll == TRUE) {
+    kable(data) %>%
+      kable_styling(bootstrap_options = "striped", font_size = 12, full_width = FALSE) %>%
+        scroll_box(width = "auto")
+  } else {
+    kable(data) %>%
+      kable_styling(bootstrap_options = "striped", font_size = 12, full_width = FALSE)
+  }
+}
 ```
 
-## Summary Cont'd
-
-```{r, comment=""}
-kable(summary(bank.data)[,0:-6])
+## Our Data
+```{r}
+df = head(bank.data)
+kable(df) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 12, full_width = FALSE)
 ```
 
-## Box Plot of Age feature
+## Summary
+```{r}
+summ = summary(bank.data)
+view(t(summ))
+```
 
-```{r pressure}
+## Preparing Data
+
+### RefNum
+```{r}
+#ref.num = data.frame(values=df$RefNum, summary=summ)
+view(t(df$RefNum))
+kable(t(df$RefNum)) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 12, full_width = FALSE)
+```
+```{r echo=TRUE}
+bank.data$RefNum = NULL # no use for reference number
+```
+
+### Age
+```{r}
+view(t(df$age))
+```
+```{r echo=TRUE}
 boxplot(bank.data$age)
 ```
 
+### Job
+Levels:
+```{r echo=TRUE}
+levels(bank.data$job)
+#levels(bank.data$job) <- c(levels(bank.data$job), "other") # add 'other' as possible value
+#bank.data$job[is.na(bank.data$job)] <- "other"
+nrow(bank.data[is.na(bank.data$job),])
+bank.data = bank.data[!is.na(bank.data$job),]
+```
+
+### Marital
+No outliers or missing values
+
+### Education
+#### Before
+```{r}
+view(t(summary(bank.data$education)))
+```
+```{r echo=TRUE}
+bank.data = bank.data[!is.na(bank.data$education),]
+bank.data$education <- as.integer(as.factor(bank.data$education))
+levels(bank.data$education) # no longer factor
+```
+#### After
+```{r}
+view(t(summary(bank.data$education)))
+```
+
+### Contact
+```{r echo=TRUE}
+nrow(bank.data[is.na(bank.data$contact),]) / nrow(bank.data) * 100
+bank.data$contact = NULL # no use for contact feature which was mostly empty 
+```
+
+### Hosuing
+#### Before
+```{r}
+view(t(summary(bank.data$housing)))
+```
+```{r echo=TRUE}
+bank.data = bank.data[!is.na(bank.data$housing),] # remove rows with N/A in housing
+lst <- bank.data$housing
+lvl <- levels(lst)
+new_housing = setNames(data.frame(do.call(rbind,lapply(lst, function(x) as.integer(lvl %in% x)) )), c("housing_n", "housing_y"))
+head(data.frame(old=bank.data$housing, new=new_housing))
+bank.data = cbind(bank.data, new_housing)
+```
+
+#### After
+```{r}
+view(head(bank.data), scroll = TRUE)
+```
+
+### Loan
+#### Before
+```{r}
+view(t(summary(bank.data$loan)))
+```
+```{r echo=TRUE}
+lst <- bank.data$loan
+lvl <- levels(lst)
+new_loan = setNames(data.frame(do.call(rbind,lapply(lst, function(x) as.integer(lvl %in% x)) )), c("loan_n", "loan_y"))
+head(data.frame(old=bank.data$loan, new=new_loan))
+bank.data = cbind(bank.data, new_loan)
+```
+
+#### After
+```{r}
+view(head(bank.data), scroll = TRUE)
+```
+
+### Month
+#### Before
+```{r}
+view(t(summary(bank.data$month)))
+```
+```{r echo=TRUE}
+bank.data$month <- match(as.factor(bank.data$month), tolower(month.name))
+```
+
+#### After
+```{r}
+view(t(head(bank.data$month)))
+```
+
+### Day
+#### Before
+```{r}
+view(t(summary(bank.data$age)))
+```
+```{r echo=TRUE}
+# outliers - dates that do not exist / are not possible Eg Feb 30, 2019
+library(lubridate)
+view(bank.data[days_in_month(bank.data$month)  < bank.data$day, c("day", "month")]) # view all noisy dates
+bank.data$day[bank.data$day > 28 & bank.data$month == 2] = 28 # fix noisy dates
+```
+
+### Duration
+```{r}
+# no missing values
+hist(bank.data$duration, main = "Duration of contact with clients", xlab = "Duration in seconds")
+boxplot(bank.data$duration)
+```
+
+### Deposit
+```{r}
+hist(bank.data$deposit)
+boxplot(bank.data$deposit)
+```
+```{r echo=TRUE}
+# contains outliers and missing values. Outliers were left alone missing values replaced with median
+length(bank.data$job[bank.data$deposit > 49000 & !is.na(bank.data$deposit)])
+bank.data$deposit[is.na(bank.data$deposit)] = median(bank.data$deposit, na.rm = TRUE)
+```
+
+### Balance
+```{r}
+boxplot(bank.data$balance)
+```
+
+### In the End
+```{r echo=TRUE}
+nrow(bank.data[!complete.cases(bank.data),])
+```
