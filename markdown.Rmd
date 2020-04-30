@@ -206,7 +206,7 @@ boxplot(bank.data$balance)
 nrow(bank.data[!complete.cases(bank.data),])
 ```
 
-## TASK 01
+## TASK 02
 Convert from seconds to minutes
 
 ```{r echo=TRUE}                                                                                                                          
@@ -223,7 +223,7 @@ bank.data$duration = minutes(bank.data$duration)
 view(t(head(bank.data$duration)))
 ```
 
-## TASK 02
+## TASK 03
 Discretization of Ages
 
 ### Before
@@ -250,7 +250,7 @@ bank.data$age <- age.temp
 view(t(head(bank.data$age)))
 ```
 
-## TASK 03
+## TASK 04
 Feature Normalization - Deposit
 
 ### Deposit
@@ -268,7 +268,7 @@ summary(deposit.norm)
 bank.data$deposit <- deposit.norm
 ```
 
-## TASK 04
+## TASK 05
 Find the number of days since the client made a deposit
 
 ```{r echo=TRUE}
@@ -291,7 +291,7 @@ bank.data$last_deposit <- as.numeric(today() - bank.data$deposit_date)
 view(head(bank.data[,0:-6]))
 ```
 
-## TASK 05
+## TASK 06
 Comparison over two periods - using Time-Series graph
 
 ```{r echo=TRUE}
@@ -310,7 +310,7 @@ plot.ts(deposit_one)
 plot.ts(deposit_two)
 ```
 
-## TASK 06
+## TASK 07
 ### A
 Which categories of jobs have the top two highest average deposits
 
