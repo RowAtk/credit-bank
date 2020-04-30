@@ -1,18 +1,14 @@
-library(lubridate)
+install.packages("ggplot2")
+library(ggplot2)
 library(magrittr)
-library(dplyr)
-data <- bank.data %>% select(month, deposit)
-period_one <- data %>% filter(data$month >= 1 & data$month <= 3)
-View(period_one)
+theme_set(theme_light())
 
-period_two <- data %>% filter(data$month >= 4 & data$month <= 6)
-View(period_two)
+data <- bank.data %>% select(deposit_date, deposit)
+period_one <- data %>% filter(data$deposit_date >= as.Date("2019-01-01") & data$deposit_date <= as.Date("2019-03-31"))
+period_two <- data %>% filter(data$deposit_date >= as.Date("2019-04-01") & data$deposit_date >= as.Date("2019-06-30"))
 
-deposit_one <- ts(period_one$deposit)
-deposit_two <- ts(period_two$deposit)
+ggplot(period_one, aes(x=deposit_date)) +
+  geom_line(aes(y=deposit)) + labs(y="Quater 1 Deposits", x="Deposit Date")
 
-plot.ts(deposit_one)
-plot.ts(deposit_two)
-
-#couldn't get both ts in one display
-#should be possible using a matrix but it didn't work
+ggplot(period_two, aes(x=deposit_date)) +
+  geom_line(aes(y=deposit)) + labs(y="Quater 2 Deposits", x="Deposit Date")
