@@ -52,7 +52,7 @@ kable(df) %>%
 ## Summary
 ```{r}
 summ = summary(bank.data)
-view(t(summ))
+view(summ)
 ```
 
 ## Preparing Data
@@ -355,7 +355,7 @@ view(dominant_ed[with(dominant_ed, order(dominant_ed$Job)),])
 
 ### C
 ```{r echo=TRUE}
-no_loan <- bank.data[(bank.data$housing == "no") & (bank.data$loan == "no"),]
+no_loan <- bank.data[(bank.data$housing_n == 1) & (bank.data$loan_n == 1),]
 nrow(no_loan) / nrow(bank.data) * 100
 ```
 
@@ -406,10 +406,11 @@ view(t(percent))
 ### G
 ```{r echo=TRUE}
 credit_risk <- bank.data %>% filter(
-  bank.data$housing == 'yes' & 
-  bank.data$loan == 'no' & 
-  bank.data$balance >= 100000)
+  bank.data$housing_y == 1 & 
+  bank.data$loan_n == 1 & 
+  bank.data$balance >= 500000)
+nrow(credit_risk)
 ```
 ```{r}
-view(head(credit_risk), scroll = TRUE)
+view(head(credit_risk[,0:-4]))
 ```

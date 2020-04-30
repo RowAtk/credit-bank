@@ -1,4 +1,4 @@
-credit_risk <- bank.data %>% filter(bank.data$housing == 'yes' & bank.data$loan == 'no' & bank.data$balance >= 100000)
+credit_risk <- bank.data %>% filter(bank.data$housing_n == 1 & bank.data$loan_n == 1 & bank.data$balance >= 500000)
 View(credit_risk)
 
 #having a house is seen as an asset. so even in the person is deemed low risk there is still a possiblity that something can go
