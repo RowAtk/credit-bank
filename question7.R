@@ -32,7 +32,7 @@ dominant_ed[with(dominant_ed, order(dominant_ed$Job)),]
 View(dominant_ed)
 
 #7c % of people who have neither mortgage nor personal loan
-no_loan <- bank.data[(bank.data$housing == "no") & (bank.data$loan == "no"),]
+no_loan <- bank.data[(bank.data$housing_n == 1) & (bank.data$loan_n == 1),]
 nrow(no_loan) / nrow(bank.data) * 100
 
 
