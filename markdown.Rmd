@@ -61,8 +61,6 @@ view(t(summ))
 ```{r}
 #ref.num = data.frame(values=df$RefNum, summary=summ)
 view(t(df$RefNum))
-kable(t(df$RefNum)) %>%
-  kable_styling(bootstrap_options = "striped", font_size = 12, full_width = FALSE)
 ```
 ```{r echo=TRUE}
 bank.data$RefNum = NULL # no use for reference number
@@ -119,14 +117,16 @@ view(t(summary(bank.data$housing)))
 bank.data = bank.data[!is.na(bank.data$housing),] # remove rows with N/A in housing
 lst <- bank.data$housing
 lvl <- levels(lst)
-new_housing = setNames(data.frame(do.call(rbind,lapply(lst, function(x) as.integer(lvl %in% x)) )), c("housing_n", "housing_y"))
+new_housing = setNames(
+  data.frame(do.call(rbind,lapply(lst, function(x) as.integer(lvl %in% x)) )), 
+  c("housing_n", "housing_y"))
 head(data.frame(old=bank.data$housing, new=new_housing))
 bank.data = cbind(bank.data, new_housing)
 ```
 
 #### After
 ```{r}
-view(head(bank.data), scroll = TRUE)
+view(head(bank.data[,0:-4]))
 ```
 
 ### Loan
@@ -137,14 +137,16 @@ view(t(summary(bank.data$loan)))
 ```{r echo=TRUE}
 lst <- bank.data$loan
 lvl <- levels(lst)
-new_loan = setNames(data.frame(do.call(rbind,lapply(lst, function(x) as.integer(lvl %in% x)) )), c("loan_n", "loan_y"))
+new_loan = setNames(
+  data.frame(do.call(rbind,lapply(lst, function(x) as.integer(lvl %in% x)) )), 
+  c("loan_n", "loan_y"))
 head(data.frame(old=bank.data$loan, new=new_loan))
 bank.data = cbind(bank.data, new_loan)
 ```
 
 #### After
 ```{r}
-view(head(bank.data), scroll = TRUE)
+view(head(bank.data[,0:-4]))
 ```
 
 ### Month
@@ -169,7 +171,9 @@ view(t(summary(bank.data$age)))
 ```{r echo=TRUE}
 # outliers - dates that do not exist / are not possible Eg Feb 30, 2019
 library(lubridate)
-view(bank.data[days_in_month(bank.data$month)  < bank.data$day, c("day", "month")]) # view all noisy dates
+
+# view all noisy dates
+view(bank.data[days_in_month(bank.data$month)  < bank.data$day, c("day", "month")]) 
 bank.data$day[bank.data$day > 28 & bank.data$month == 2] = 28 # fix noisy dates
 ```
 
@@ -186,7 +190,8 @@ hist(bank.data$deposit)
 boxplot(bank.data$deposit)
 ```
 ```{r echo=TRUE}
-# contains outliers and missing values. Outliers were left alone missing values replaced with median
+# contains outliers and missing values. 
+# Outliers were left alone missing values replaced with median
 length(bank.data$job[bank.data$deposit > 49000 & !is.na(bank.data$deposit)])
 bank.data$deposit[is.na(bank.data$deposit)] = median(bank.data$deposit, na.rm = TRUE)
 ```
@@ -196,7 +201,215 @@ bank.data$deposit[is.na(bank.data$deposit)] = median(bank.data$deposit, na.rm = 
 boxplot(bank.data$balance)
 ```
 
-### In the End
+### End of initial data preparation
 ```{r echo=TRUE}
 nrow(bank.data[!complete.cases(bank.data),])
+```
+
+## TASK 01
+Convert from seconds to minutes
+
+```{r echo=TRUE}                                                                                                                          
+minutes = function (seconds) {
+  period = seconds_to_period(bank.data$duration)
+  return(minute(period) + 0.01 * second(period))
+}
+
+bank.data$duration = minutes(bank.data$duration)
+```
+
+### RESULT
+```{r}
+view(t(head(bank.data$duration)))
+```
+
+## TASK 02
+Discretization of Ages
+
+```{r}
+hist(bank.data$age)
+boxplot(bank.data$age)
+```
+```{r echo=TRUE}
+bins <- 4
+abs.max <- max(bank.data$age)
+abs.min <- min(bank.data$age)
+new.max <- abs.max + bins 
+width <- (new.max - abs.min) / bins
+
+age.temp = cut(
+  bank.data$age, 
+  breaks = seq(abs.min, new.max, width), 
+  labels = c("Young Adult","Adults", "Mid-life", "Elderly"), 
+  right = FALSE)
+bank.data$age <- age.temp
+```
+
+### RESULT
+```{r}
+view(t(head(bank.data$age)))
+```
+
+## TASK 03
+Feature Normalization - Deposit
+
+### Deposit
+```{r}
+view(t(summary(bank.data$deposit)))
+```
+```{r echo=TRUE}
+# deposit normalization
+deposit.min <- min(bank.data$deposit)
+deposit.max <- max(bank.data$deposit)
+deposit.norm <- ((bank.data[, "deposit"] - deposit.min) / 
+                   (deposit.max - deposit.min)) * ((100 - 1) + 1)
+deposit.norm <- round(deposit.norm, digits = 2)
+summary(deposit.norm)
+bank.data$deposit <- deposit.norm
+```
+
+## TASK 04
+Find the number of days since the client made a deposit
+
+```{r echo=TRUE}
+view(head(bank.data[,c("day", "month")]))
+```
+```{r echo=TRUE}
+# make a date string
+#string = paste(5, 3, year(today), sep = "-")
+
+# make a date
+#something <- mdy(paste(5, 3, year(today), sep = "-"))
+
+bank.data$deposit_date <- mdy(paste(bank.data$month, bank.data$day, "2019", sep = "-")) 
+
+bank.data$last_deposit <- as.numeric(today() - bank.data$deposit_date)
+```
+
+### RESULT
+```{r}
+view(head(bank.data[,0:-6]))
+```
+
+## TASK 05
+Comparison over two periods - using Time-Series graph
+
+```{r echo=TRUE}
+library(magrittr)
+data <- bank.data %>% select(month, deposit)
+period_one <- data %>% filter(data$month >= 1 & data$month <= 3)
+view(t(head(period_one)))
+
+period_two <- data %>% filter(data$month >= 4 & data$month <= 6)
+view(t(head(period_two)))
+
+deposit_one <- ts(period_one$deposit)
+deposit_two <- ts(period_two$deposit)
+
+plot.ts(deposit_one)
+plot.ts(deposit_two)
+```
+
+## TASK 06
+### A
+Which categories of jobs have the top two highest average deposits
+
+```{r echo=TRUE}
+Job <- levels(bank.data$job)
+Average_deposit <- rep(0, length(Job))
+job_deposits <- data.frame(Job, Average_deposit)
+
+for(x in 1:(length(Job))){
+  #sum the deposits for each job type
+  temp <- sum(bank.data[bank.data$job == Job[x], 10]) / 
+    nrow(bank.data[bank.data$job == Job[x],]) 
+  job_deposits$Average_deposit[x] <- temp
+}
+
+#sort in decending order by average deposit
+job_deposits = job_deposits[with(job_deposits, order(-job_deposits$Average_deposit)),] 
+
+job_deposits$Average_deposit = round(job_deposits$Average_deposit, digits = 2)
+```
+```{r}
+view(job_deposits[0:2,])
+```
+
+### B
+dominant educational level for each job type
+```{r echo=TRUE}
+Educational_level <- rep(0, length(Job))
+dominant_ed <- data.frame(Job, Educational_level)
+
+modefunc <- function(v) {
+  a <- unique(v)
+  a[which.max(tabulate(match(v, a)))]
+}
+
+for(x in 1:(length(Job))){
+  temp <- bank.data[bank.data$job == Job[x], 4]
+  dominant_ed$Educational_level[x] <- modefunc(temp)
+}
+view(dominant_ed[with(dominant_ed, order(dominant_ed$Job)),])
+```
+
+### C
+```{r echo=TRUE}
+no_loan <- bank.data[(bank.data$housing == "no") & (bank.data$loan == "no"),]
+nrow(no_loan) / nrow(bank.data) * 100
+```
+
+### D
+```{r echo=TRUE}
+age_groups = levels(bank.data$age)
+balance <- rep(0, length(age_groups))
+age_balance <- data.frame(age_groups, balance)
+
+for(x in 1:(length(age_groups))){
+  temp <- sum(bank.data[bank.data$age == age_groups[x], 11]) /
+    nrow(bank.data[bank.data$age == age_groups[x],]) #sum the deposits for each job type
+  age_balance$balance[x] <- round(temp, digits = 2)
+}
+```
+```{r}
+view(age_balance)
+view(age_balance[age_balance$balance == max(age_balance$balance), ])
+```
+
+### E
+```{r echo=TRUE}
+dep_bal = bank.data[, c("deposit", "balance")]
+dep_bal.cor = cor(dep_bal$balance, dep_bal$deposit)
+
+library(corrplot)
+corrplot(
+  cor(dep_bal, method = "pearson"), 
+  method = "color", 
+  order = "AOE", 
+  tl.col = "black", 
+  tl.cex = 1, 
+  addCoef.col = "white")
+```
+
+### F 
+```{r echo=TRUE}
+neg <- bank.data %>% filter(bank.data$balance < 0)
+view(head(neg), scroll = TRUE)
+
+neg <- neg %>% filter(neg$marital == "married")
+view(head(neg), scroll = TRUE)
+
+percent <- nrow(neg)/nrow(bank.data) *100
+view(t(percent))
+```
+
+### G
+```{r echo=TRUE}
+credit_risk <- bank.data %>% filter(
+  bank.data$housing == 'yes' & 
+  bank.data$loan == 'no' & 
+  bank.data$balance >= 100000)
+```
+```{r}
+view(head(credit_risk), scroll = TRUE)
 ```

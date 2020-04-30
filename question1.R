@@ -101,8 +101,8 @@ boxplot(bank.data$balance)
 # END OF MISSING VALUES
 nrow(bank.data[!complete.cases(bank.data),])
 
-library(dplyr)
-library(kintr)
-library(kableExtra)
-kable(head(bank.data)) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+#library(dplyr)
+#library(kintr)
+#library(kableExtra)
+#kable(head(bank.data)) %>%
+#  kable_styling(bootstrap_options = c("striped", "hover"))
