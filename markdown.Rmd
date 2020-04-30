@@ -75,11 +75,7 @@ boxplot(bank.data$age)
 ```
 
 ### Job
-Levels:
 ```{r echo=TRUE}
-levels(bank.data$job)
-#levels(bank.data$job) <- c(levels(bank.data$job), "other") # add 'other' as possible value
-#bank.data$job[is.na(bank.data$job)] <- "other"
 nrow(bank.data[is.na(bank.data$job),])
 bank.data = bank.data[!is.na(bank.data$job),]
 ```
@@ -152,7 +148,7 @@ view(head(bank.data[,0:-4]))
 ### Month
 #### Before
 ```{r}
-view(t(summary(bank.data$month)))
+view(t(head(bank.data$month)))
 ```
 ```{r echo=TRUE}
 bank.data$month <- match(as.factor(bank.data$month), tolower(month.name))
