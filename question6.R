@@ -1,7 +1,7 @@
 library(lubridate)
 library(magrittr)
 library(dplyr)
-data <- sch.data %>% select(month, deposit)
+data <- bank.data %>% select(month, deposit)
 period_one <- data %>% filter(data$month >= 1 & data$month <= 3)
 View(period_one)
 

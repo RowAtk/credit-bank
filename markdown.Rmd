@@ -108,7 +108,7 @@ nrow(bank.data[is.na(bank.data$contact),]) / nrow(bank.data) * 100
 bank.data$contact = NULL # no use for contact feature which was mostly empty 
 ```
 
-### Hosuing
+### Housing
 #### Before
 ```{r}
 view(t(summary(bank.data$housing)))
