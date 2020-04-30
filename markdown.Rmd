@@ -226,9 +226,9 @@ view(t(head(bank.data$duration)))
 ## TASK 02
 Discretization of Ages
 
+### Before
 ```{r}
-hist(bank.data$age)
-boxplot(bank.data$age)
+view(t(head(bank.data$age)))
 ```
 ```{r echo=TRUE}
 bins <- 4
@@ -245,7 +245,7 @@ age.temp = cut(
 bank.data$age <- age.temp
 ```
 
-### RESULT
+### After
 ```{r}
 view(t(head(bank.data$age)))
 ```
